@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Findings Appendix — {{ company_name }}</title>
+  <style>
+    /* ----------------------------------------------------------------
+       Page setup — US Letter, portrait, with page breaks
+    ---------------------------------------------------------------- */
+    @page {
+      size: letter portrait;
+      margin: 0.72in 0.6in 0.55in 0.6in;
+
+      @top-left {
+        content: "DXC AdvisoryX · AI Readiness Diagnostic";
+        font-family: Arial, sans-serif;
+        font-size: 7pt;
+        color: #8891A8;
+        padding-top: 0.18in;
+      }
+
+      @top-right {
+        content: "Confidential";
+        font-family: Arial, sans-serif;
+        font-size: 7pt;
+        color: #8891A8;
+        padding-top: 0.18in;
+      }
+
+      @bottom-right {
+        content: "Page " counter(page) " of " counter(pages);
+        font-family: Arial, sans-serif;
+        font-size: 7pt;
+        color: #8891A8;
+        padding-bottom: 0.18in;
+      }
+
+      @bottom-left {
+        content: "{{ company_name }} — Findings Appendix";
+        font-family: Arial, sans-serif;
+        font-size: 7pt;
+        color: #8891A8;
+        padding-bottom: 0.18in;
+      }
+    }
+
+    @page cover {
+      margin: 0;
+      @top-left { content: ""; }
+      @top-right { content: ""; }
+      @bottom-left { content: ""; }
+      @bottom-right { content: ""; }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "GT Standard", Arial, Helvetica, sans-serif;
+      font-size: 10pt;
+      color: #3D3F50;
+      background: #FFFFFF;
+      margin: 0;
+    }
+
+    /* ================================================================
+       Utility
+    ================================================================ */
+    .page-break {
+      page-break-after: always;
+    }
+
+    .avoid-break {
+      page-break-inside: avoid;
+    }
+
+    /* ================================================================
+       COVER PAGE
+    ================================================================ */
+    .cover-page {
+      page: cover;
+      width: 8.5in;
+      height: 11in;
+      background: #0E1020;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      margin: 0;
+      page-break-after: always;
+    }
+
+    .cover-top-bar {
+      height: 0.28in;
+      background: #004AAC;
+      width: 100%;
+    }
+
+    .cover-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 0.8in;
+    }
+
+    .cover-eyebrow {
+      font-size: 8pt;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #4995FF;
+      margin-bottom: 0.2in;
+    }
+
+    .cover-title {
+      font-size: 32pt;
+      font-weight: 900;
+      color: #FFFFFF;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.12in;
+    }
+
+    .cover-company {
+      font-size: 16pt;
+      font-weight: 400;
+      color: #A1E6FF;
+      margin-bottom: 0.06in;
+    }
+
+    .cover-date {
+      font-size: 10pt;
+      color: #8891A8;
+      margin-bottom: 0.5in;
+    }
+
+    .cover-divider {
+      width: 0.6in;
+      height: 3px;
+      background: #004AAC;
+      margin-bottom: 0.3in;
+    }
+
+    .cover-toc {
+      background: rgba(255,255,255,0.05);
+      border-left: 3px solid #4995FF;
+      padding: 0.2in 0.24in;
+      border-radius: 0 5px 5px 0;
+      max-width: 4.5in;
+    }
+
+    .cover-toc-title {
+      font-size: 8pt;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #4995FF;
+      margin-bottom: 0.12in;
+    }
+
+    .cover-toc-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 9pt;
+      color: #D0D4E0;
+      margin-bottom: 0.07in;
+      gap: 0.2in;
+    }
+
+    .cover-toc-dots {
+      flex: 1;
+      border-bottom: 1px dotted #4A5070;
+      margin: 0 0.08in 0.03in 0.08in;
+    }
+
+    .cover-toc-page {
+      color: #8891A8;
+      font-size: 8.5pt;
+    }
+
+    .cover-footer {
+      padding: 0.22in 0.8in;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cover-footer-wordmark {
+      font-size: 14pt;
+      font-weight: 900;
+      color: #FFFFFF;
+      letter-spacing: -0.02em;
+    }
+
+    .cover-footer-sub {
+      font-size: 7pt;
+      color: #8891A8;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .cover-footer-confidential {
+      font-size: 7.5pt;
+      color: #8891A8;
+      text-align: right;
+    }
+
+    /* ================================================================
+       Inner page styles (pages 2+)
+    ================================================================ */
+    .section-page {
+      margin: 0;
+    }
+
+    /* Section title blocks */
+    .page-section-header {
+      border-bottom: 2px solid #0E1020;
+      padding-bottom: 0.12in;
+      margin-bottom: 0.22in;
+    }
+
+    .page-section-eyebrow {
+      font-size: 7pt;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #004AAC;
+      margin-bottom: 0.05in;
+    }
+
+    .page-section-title {
+      font-size: 20pt;
+      font-weight: 800;
+      color: #0E1020;
+      letter-spacing: -0.01em;
+      line-height: 1.15;
+    }
+
+    /* ================================================================
+       METHODOLOGY PAGE
+    ================================================================ */
+    .methodology-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.22in 0.28in;
+      margin-top: 0.1in;
+    }
+
+    .methodology-card {
+      background: #F6F3F0;
+      border-radius: 5px;
+      padding: 0.14in 0.18in;
+      border-left: 3px solid #004AAC;
+    }
+
+    .methodology-card-title {
+      font-size: 9pt;
+      font-weight: 700;
+      color: #0E1020;
+      margin-bottom: 0.08in;
+    }
+
+    .methodology-card-body {
+      font-size: 8.5pt;
+      color: #3D3F50;
+      line-height: 1.6;
+    }
+
+    .methodology-prose {
+      font-size: 9pt;
+      color: #3D3F50;
+      line-height: 1.7;
+      margin-bottom: 0.2in;
+    }
+
+    .confidence-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.1in;
+    }
+
+    .confidence-table th {
+      background: #0E1020;
+      color: #FFFFFF;
+      font-size: 7.5pt;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.08in 0.12in;
+      text-align: left;
+    }
+
+    .confidence-table td {
+      padding: 0.08in 0.12in;
+      font-size: 8.5pt;
+      color: #3D3F50;
+      border-bottom: 1px solid #E8E4E0;
+      vertical-align: top;
+    }
+
+    .confidence-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .conf-high { color: #004AAC; font-weight: 700; }
+    .conf-medium { color: #FFAE41; font-weight: 700; }
+    .conf-low { color: #FFC982; font-weight: 700; }
+
+    /* ================================================================
+       DIMENSION DETAIL PAGES
+    ================================================================ */
+    .dim-detail-page {
+      margin: 0;
+    }
+
+    .dim-header-band {
+      background: #F6F3F0;
+      border-left: 6px solid #004AAC;
+      padding: 0.15in 0.22in;
+      margin-bottom: 0.2in;
+      border-radius: 0 5px 5px 0;
+      display: flex;
+      align-items: center;
+      gap: 0.22in;
+    }
+
+    .dim-header-name {
+      font-size: 15pt;
+      font-weight: 800;
+      color: #0E1020;
+      flex: 1;
+    }
+
+    .dim-score-badge {
+      font-size: 26pt;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .dim-tier-label {
+      font-size: 8pt;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.03in 0.1in;
+      border-radius: 3px;
+      color: #0E1020;
+      margin-top: 0.05in;
+      display: inline-block;
+    }
+
+    .dim-two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.22in;
+      margin-bottom: 0.2in;
+    }
+
+    .dim-box {
+      background: #F6F3F0;
+      border-radius: 5px;
+      padding: 0.14in 0.18in;
+    }
+
+    .dim-box-title {
+      font-size: 7pt;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #004AAC;
+      margin-bottom: 0.1in;
+    }
+
+    .dim-box-body {
+      font-size: 8.5pt;
+      color: #3D3F50;
+      line-height: 1.6;
+    }
+
+    .signal-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .signal-list li {
+      font-size: 8.5pt;
+      color: #3D3F50;
+      line-height: 1.45;
+      padding: 0.04in 0;
+      border-bottom: 1px solid #E8E4E0;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.07in;
+    }
+
+    .signal-list li:last-child { border-bottom: none; }
+
+    .signal-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #004AAC;
+      margin-top: 0.06in;
+      flex-shrink: 0;
+    }
+
+    .action-list {
+      list-style: none;
+      padding: 0;
+      counter-reset: action-counter;
+    }
+
+    .action-list li {
+      font-size: 8.5pt;
+      color: #3D3F50;
+      line-height: 1.5;
+      padding: 0.06in 0;
+      border-bottom: 1px solid #E8E4E0;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.1in;
+      counter-increment: action-counter;
+    }
+
+    .action-list li:last-child { border-bottom: none; }
+
+    .action-num {
+      font-size: 8pt;
+      font-weight: 800;
+      color: #004AAC;
+      width: 0.18in;
+      flex-shrink: 0;
+    }
+
+    .dim-score-reasoning {
+      font-size: 8.5pt;
+      color: #3D3F50;
+      line-height: 1.65;
+      margin-bottom: 0.18in;
+    }
+
+    .dim-full-box {
+      background: #F6F3F0;
+      border-radius: 5px;
+      padding: 0.14in 0.18in;
+      margin-bottom: 0.2in;
+    }
+
+    .peer-placeholder {
+      background: #EFF6FF;
+      border: 1px dashed #4995FF;
+      border-radius: 5px;
+      padding: 0.1in 0.16in;
+      font-size: 8pt;
+      color: #3D3F50;
+      font-style: italic;
+      margin-top: 0.1in;
+    }
+
+    /* ================================================================
+       SOURCES PAGE
+    ================================================================ */
+    .sources-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .sources-list li {
+      font-size: 8.5pt;
+      color: #3D3F50;
+      line-height: 1.5;
+      padding: 0.06in 0;
+      border-bottom: 1px solid #E8E4E0;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.1in;
+    }
+
+    .sources-list li:last-child { border-bottom: none; }
+
+    .source-bullet {
+      font-size: 8pt;
+      font-weight: 700;
+      color: #004AAC;
+      flex-shrink: 0;
+    }
+
+    .disclaimer-block {
+      margin-top: 0.28in;
+      background: #F6F3F0;
+      border-radius: 5px;
+      border-left: 3px solid #8891A8;
+      padding: 0.14in 0.18in;
+    }
+
+    .disclaimer-title {
+      font-size: 7pt;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #8891A8;
+      margin-bottom: 0.08in;
+    }
+
+    .disclaimer-body {
+      font-size: 7.5pt;
+      color: #8891A8;
+      line-height: 1.6;
+    }
+
+    .contact-block {
+      margin-top: 0.22in;
+      background: #0E1020;
+      border-radius: 5px;
+      padding: 0.18in 0.22in;
+    }
+
+    .contact-title {
+      font-size: 8pt;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #4995FF;
+      margin-bottom: 0.1in;
+    }
+
+    .contact-body {
+      font-size: 9pt;
+      color: #D0D4E0;
+      line-height: 1.65;
+    }
+
+    /* ================================================================
+       TIER COLOUR HELPERS (inline style overrides via Jinja)
+    ================================================================ */
+    .tier-emerging { color: #FFC982; }
+    .tier-developing { color: #FFAE41; }
+    .tier-established { color: #A1E6FF; }
+    .tier-leading { color: #4995FF; }
+
+    .bg-emerging { background: #FFC982; }
+    .bg-developing { background: #FFAE41; }
+    .bg-established { background: #A1E6FF; }
+    .bg-leading { background: #4995FF; }
+  </style>
+</head>
+<body>
+
+<!-- ================================================================
+     COVER PAGE
+================================================================ -->
+<div class="cover-page">
+  <div class="cover-top-bar"></div>
+  <div class="cover-content">
+    <div class="cover-eyebrow">DXC AdvisoryX &nbsp;·&nbsp; AI Readiness Diagnostic V0</div>
+    <div class="cover-title">Findings<br/>Appendix</div>
+    <div class="cover-company">{{ company_name }}</div>
+    <div class="cover-date">Assessment Date: {{ assessment_date if assessment_date else "Q2 2026" }}</div>
+    <div class="cover-divider"></div>
+
+    <div class="cover-toc">
+      <div class="cover-toc-title">Contents</div>
+      <div class="cover-toc-item">
+        <span>Methodology &amp; Confidence Framework</span>
+        <span class="cover-toc-dots"></span>
+        <span class="cover-toc-page">2</span>
+      </div>
+      <div class="cover-toc-item">
+        <span>Data Foundation</span>
+        <span class="cover-toc-dots"></span>
+        <span class="cover-toc-page">3</span>
+      </div>
+      <div class="cover-toc-item">
+        <span>Governance Posture</span>
+        <span class="cover-toc-dots"></span>
+        <span class="cover-toc-page">4</span>
+      </div>
+      <div class="cover-toc-item">
+        <span>AI Investment Maturity</span>
+        <span class="cover-toc-dots"></span>
+        <span class="cover-toc-page">5</span>
+      </div>
+      <div class="cover-toc-item">
+        <span>Org Change Readiness</span>
+        <span class="cover-toc-dots"></span>
+        <span class="cover-toc-page">6</span>
+      </div>
+      <div class="cover-toc-item">
+        <span>Value-Pocket Clarity</span>
+        <span class="cover-toc-dots"></span>
+        <span class="cover-toc-page">7</span>
+      </div>
+      <div class="cover-toc-item">
+        <span>Regulatory Complexity</span>
+        <span class="cover-toc-dots"></span>
+        <span class="cover-toc-page">8</span>
+      </div>
+      <div class="cover-toc-item">
+        <span>Sources &amp; Disclaimer</span>
+        <span class="cover-toc-dots"></span>
+        <span class="cover-toc-page">9</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="cover-footer">
+    <div>
+      <div class="cover-footer-wordmark">DXC</div>
+      <div class="cover-footer-sub">AdvisoryX</div>
+    </div>
+    <div class="cover-footer-confidential">
+      Confidential &amp; Proprietary<br/>
+      Prepared exclusively for {{ company_name }}
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================
+     PAGE 2: METHODOLOGY
+================================================================ -->
+<div class="section-page page-break">
+  <div class="page-section-header">
+    <div class="page-section-eyebrow">How This Assessment Works</div>
+    <div class="page-section-title">Methodology &amp; Confidence Framework</div>
+  </div>
+
+  <p class="methodology-prose">
+    {% if methodology_note %}
+      {{ methodology_note }}
+    {% else %}
+      The DXC AI Readiness Diagnostic V0 is a hybrid assessment combining a structured 16-question questionnaire completed by the prospect contact with proprietary automated research across six data signal categories. Scores are computed per dimension using a weighted average of questionnaire responses and research signals, then normalised to a 0–100 scale. Tier thresholds are: Emerging (0–39), Developing (40–59), Established (60–79), Leading (80–100). The overall score is a weighted composite of the six dimension scores, with weights reflecting the relative impact of each dimension on AI deployment velocity, as calibrated against DXC's practitioner knowledge base and industry benchmarks.
+    {% endif %}
+  </p>
+
+  <div class="methodology-grid">
+    <div class="methodology-card">
+      <div class="methodology-card-title">Questionnaire Signals</div>
+      <div class="methodology-card-body">
+        The 16-question adaptive questionnaire is drawn from a pool of 25+ validated questions covering all six dimensions. Questions are personalised by prospect persona (P1 Executive, P2 Practitioner, P3 Commercial) and include branching logic to avoid inapplicable questions. Each response is scored 1–4 and weighted by the question's contribution coefficient to its dimension score.
+      </div>
+    </div>
+    <div class="methodology-card">
+      <div class="methodology-card-title">Automated Research Signals</div>
+      <div class="methodology-card-body">
+        Three parallel research agents enrich the assessment: financial signal analysis (SEC filings, earnings transcripts, CapEx trends), news and market signal analysis (AI leadership hires, product announcements, regulatory actions), and technology stack inference (job postings, vendor partnerships, public API footprint). Research signals adjust dimension scores within ±15 points.
+      </div>
+    </div>
+    <div class="methodology-card">
+      <div class="methodology-card-title">Partner Attestation</div>
+      <div class="methodology-card-body">
+        All AI-generated scores and findings pass through a senior partner review gate before delivery. Partners may adjust individual dimension scores by up to 20 points with a documented rationale. Every adjustment is captured as a training signal to improve future model calibration.
+      </div>
+    </div>
+    <div class="methodology-card">
+      <div class="methodology-card-title">Limitations &amp; Scope</div>
+      <div class="methodology-card-body">
+        This assessment reflects publicly available information and self-reported questionnaire responses as of the assessment date. It does not constitute an audit, due-diligence exercise, or regulatory compliance opinion. Scores should be interpreted directionally and validated against internal data during a follow-on engagement.
+      </div>
+    </div>
+  </div>
+
+  <br/>
+
+  <div class="methodology-card-title" style="margin-bottom: 0.1in; font-size: 8pt; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #004AAC;">Confidence Level Reference</div>
+  <table class="confidence-table">
+    <thead>
+      <tr>
+        <th>Level</th>
+        <th>Definition</th>
+        <th>Typical sources</th>
+        <th>Score adjustment range</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="conf-high">High</span></td>
+        <td>Multiple corroborating signals; questionnaire and research align</td>
+        <td>SEC filings + questionnaire + news signals</td>
+        <td>±0–5 pts</td>
+      </tr>
+      <tr>
+        <td><span class="conf-medium">Medium</span></td>
+        <td>Partial corroboration; some reliance on inference</td>
+        <td>Tech stack inference + one other signal type</td>
+        <td>±5–10 pts</td>
+      </tr>
+      <tr>
+        <td><span class="conf-low">Low</span></td>
+        <td>Limited external signals; primarily questionnaire-driven</td>
+        <td>Questionnaire only or single research signal</td>
+        <td>±10–15 pts</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ================================================================
+     DIMENSION DETAIL PAGES (one per dimension)
+================================================================ -->
+{% set dimension_details_data = dimension_details if dimension_details else [] %}
+
+{% set default_dimensions = [
+  {
+    "dimension_id": "data_foundation",
+    "dimension_name": "Data Foundation",
+    "score": 52,
+    "tier_label": "Developing",
+    "tier_color": "#FFAE41",
+    "narrative": "The organisation has partially integrated data platforms with defined ownership in selected domains, but enterprise-wide data cataloguing and lineage tracking remain incomplete. ML-ready dataset coverage is below 40%, limiting the breadth of AI models that can be trained on proprietary data.",
+    "key_strengths": ["Cloud-based data warehouse deployed (Snowflake confirmed via tech stack inference)", "Data quality SLAs defined for core finance and customer domains"],
+    "key_gaps": ["No enterprise data catalogue or active data mesh architecture", "Less than 40% of business-critical datasets labelled and versioned for AI use", "Data lineage tooling deployed only in finance; coverage is not enterprise-wide"],
+    "questionnaire_signals": ["Self-reported 'partially integrated' enterprise data management (Q1.1)", "10–40% of datasets ML-ready (Q1.2)", "Partial lineage documentation in some pipelines (Q1.3)"],
+    "research_signals": ["Snowflake instance confirmed via job postings and technology partnership announcements", "No evidence of active data mesh or lakehouse initiative in public filings or press"],
+    "what_strong_looks_like": "A Leading organisation in this dimension operates a real-time data mesh or lakehouse with >70% of business-critical datasets labelled, versioned, and governed. Automated lineage is captured across all domains. AI model training pipelines are fully self-service for approved data science teams.",
+    "actions_to_improve": ["Commission a data estate audit to identify and prioritise cataloguing gaps — typical timeline 6–8 weeks", "Implement an enterprise data catalogue tool (e.g., Collibra, Atlan) starting with the top three data domains by AI use-case priority", "Extend lineage tooling from finance to supply chain and customer domains as part of next technology spend cycle"],
+    "confidence": "medium",
+    "weight": 0.20
+  },
+  {
+    "dimension_id": "governance_posture",
+    "dimension_name": "Governance Posture",
+    "score": 61,
+    "tier_label": "Established",
+    "tier_color": "#A1E6FF",
+    "narrative": "An AI governance framework has been formally adopted with a published policy, a named executive accountable for AI governance, and initial privacy-engineering controls. Enforcement mechanisms are limited and audit trails for model decisions are not yet systematically captured.",
+    "key_strengths": ["Published AI governance policy with board visibility", "Named executive (CDAO) accountable for AI and data governance", "Privacy engineering integrated into the core data pipeline for regulated data domains"],
+    "key_gaps": ["No automated model monitoring or drift detection in production", "Model explainability not yet required for all AI systems", "Audit trail coverage is incomplete for non-core AI deployments"],
+    "questionnaire_signals": ["Formal AI governance framework adopted but limited enforcement (Q2.1)", "Policy-driven with some automated privacy controls (Q2.2)", "Named individual with AI governance as part of remit (Q2.3)"],
+    "research_signals": ["CDAO appointment announced in press release (2024)", "No evidence of regulatory action or enforcement events"],
+    "what_strong_looks_like": "A Leading organisation embeds AI governance at the architecture level with automated controls for model bias, drift monitoring, full audit trails, and a regular review cadence. All AI systems require explainability documentation before production release.",
+    "actions_to_improve": ["Extend governance framework to include mandatory explainability requirements for all production AI systems", "Implement model monitoring and drift alerting for existing production models", "Conduct a governance gap assessment against EU AI Act obligations (effective 2026)"],
+    "confidence": "high",
+    "weight": 0.18
+  },
+  {
+    "dimension_id": "ai_investment_maturity",
+    "dimension_name": "AI Investment Maturity",
+    "score": 48,
+    "tier_label": "Developing",
+    "tier_color": "#FFAE41",
+    "narrative": "The organisation has moved beyond exploration with one to two AI systems in production, and planned investment is in the 2–5% of technology budget range. An MLOps function is emerging but not yet formalised, and production model lifecycle management relies on individual data scientists.",
+    "key_strengths": ["Active AI pilots in production for customer service triage and fraud detection", "Technology budget allocation for AI increasing year-over-year"],
+    "key_gaps": ["No dedicated MLOps team; model lifecycle managed informally", "Planned investment below 5% of tech budget — insufficient for scaling beyond current pilots", "No CI/CD pipeline for model deployment"],
+    "questionnaire_signals": ["One or two AI systems in production (Q3.1)", "2–5% of tech budget planned for AI (Q3.2)", "Small MLOps team being assembled (Q3.3)"],
+    "research_signals": ["AI investment signals in earnings call (Q3 2025): 'We are selectively piloting GenAI in customer operations'", "No evidence of dedicated AI platform engineering team in job postings"],
+    "what_strong_looks_like": "A Leading organisation deploys AI across multiple business units with a mature MLOps platform, automated CI/CD for model deployment, and >15% of technology budget allocated to AI. An AI platform engineering team manages production model lifecycle independently of the data science function.",
+    "actions_to_improve": ["Formalise an MLOps function — even a team of two engineers with defined toolchain can significantly accelerate production deployment velocity", "Set a 12-month target to bring planned AI investment above 5% of tech budget with board approval", "Adopt a standard model CI/CD pattern (e.g., MLflow + deployment pipeline) for the two existing production models"],
+    "confidence": "medium",
+    "weight": 0.18
+  },
+  {
+    "dimension_id": "org_change_readiness",
+    "dimension_name": "Org Change Readiness",
+    "score": 55,
+    "tier_label": "Developing",
+    "tier_color": "#FFAE41",
+    "narrative": "Executive sponsorship for AI is active and visible through regular internal communications, and a company-wide AI literacy programme has been launched. Change management capability for large-scale transformation is rated moderate by the prospect, with structured capability existing but significant effort required to sustain adoption.",
+    "key_strengths": ["Active executive AI sponsor with regular internal communications cadence", "Company-wide AI literacy programme launched (not yet embedded in role-specific talent strategy)"],
+    "key_gaps": ["Change management capability rated moderate — adoption of previous large-scale transformations has required significant effort", "AI literacy programme is awareness-level; role-specific upskilling not yet in place", "No measured adoption outcomes from AI tools deployed to date"],
+    "questionnaire_signals": ["Moderate change management capability, significant effort required (Q4.1 scale: 3/5)", "Company-wide AI literacy programme launched (Q4.2)", "Active executive sponsor with regular communications (Q4.3)"],
+    "research_signals": ["LinkedIn: AI-related job postings increased 45% year-over-year", "No evidence of formal change management practice or OCM centre of excellence in public information"],
+    "what_strong_looks_like": "A Leading organisation has a structured change management capability with measurable adoption KPIs, role-specific AI upskilling embedded in the talent lifecycle, and board-level accountability for AI adoption rates across business units.",
+    "actions_to_improve": ["Define and instrument adoption KPIs for existing AI tools — create a change readiness baseline before the next deployment", "Evolve the AI literacy programme from awareness to role-specific skill modules for the top five job families", "Commission an organisational change readiness assessment to identify adoption risk hotspots before scaling AI deployments"],
+    "confidence": "medium",
+    "weight": 0.18
+  },
+  {
+    "dimension_id": "value_pocket_clarity",
+    "dimension_name": "Value-Pocket Clarity",
+    "score": 70,
+    "tier_label": "Established",
+    "tier_color": "#A1E6FF",
+    "narrative": "The organisation has a prioritised AI opportunity map and is in the process of developing quantified business cases for the top priorities. Value measurement is multi-dimensional (cost, revenue, customer, risk) and the prospect contact demonstrated clear articulation of the highest-value unrealised process opportunity.",
+    "key_strengths": ["Prioritised AI opportunity map exists with top five use cases defined", "Multi-dimensional value measurement framework in place", "Clear articulation of the highest-value process opportunity (intelligent claims processing)"],
+    "key_gaps": ["Business cases have quantified ROI estimates for only two of the five priority opportunities", "Value realisation tracking not yet in place for deployed AI systems — no feedback loop from production"],
+    "questionnaire_signals": ["Prioritised AI opportunity map exists (Q5.1: option C)", "Value measured across cost, revenue, customer satisfaction, and risk dimensions (Q5.2)", "Open response identified intelligent claims processing as highest-value opportunity (Q5.3)"],
+    "research_signals": ["Earnings call transcript cites 'process efficiency and cost optimisation' as top technology investment rationale", "Competitor A launched AI-driven claims processing in Q2 2025 — competitive pressure confirmed"],
+    "what_strong_looks_like": "A Leading organisation has quantified business cases with ROI estimates for all priority AI opportunities, active value tracking for deployed systems, and a clear competitive intelligence process that updates the opportunity map quarterly.",
+    "actions_to_improve": ["Complete quantified business cases for the remaining three priority opportunities before next investment cycle", "Implement value tracking dashboards for existing deployed AI systems to create a feedback loop", "Establish a quarterly AI opportunity review cadence aligned to the strategy cycle"],
+    "confidence": "high",
+    "weight": 0.14
+  },
+  {
+    "dimension_id": "regulatory_complexity",
+    "dimension_name": "Regulatory Complexity",
+    "score": 44,
+    "tier_label": "Developing",
+    "tier_color": "#FFAE41",
+    "narrative": "The organisation faces material regulatory complexity across financial services frameworks (SR 11-7, DORA, MiFID II) and data privacy obligations. An AI-specific compliance assessment is in progress. Operations span 2–3 jurisdictions, adding moderate cross-border complexity. This score reflects the compliance burden rather than a deficiency — high complexity is inherent to the sector.",
+    "key_strengths": ["Compliance assessment for AI-specific obligations in progress", "Privacy controls in place for regulated data domains"],
+    "key_gaps": ["Compliance assessment not yet complete — gaps remain unquantified", "EU AI Act obligations not yet mapped to existing AI systems in production"],
+    "questionnaire_signals": ["Financial services regulation (SR 11-7, DORA) applicable (Q6.1)", "Compliance assessment in progress (Q6.2)", "Operates across 2–3 jurisdictions (Q6.3)"],
+    "research_signals": ["DORA compliance deadline: January 2025 — evidence of active compliance programme in regulatory filings", "EU AI Act high-risk system classification likely applicable to credit scoring and fraud detection models"],
+    "what_strong_looks_like": "A Leading organisation in a high-complexity regulatory environment has full compliance with applicable frameworks, automated compliance monitoring, and a proactive regulatory horizon-scanning process that feeds directly into the AI governance programme.",
+    "actions_to_improve": ["Complete the AI-specific compliance assessment within 60 days and publish a gap remediation roadmap", "Map all AI systems currently in production against EU AI Act risk classifications before the 2026 enforcement date", "Engage DXC's regulatory compliance practice for a DORA readiness review — this is a near-term requirement for financial institutions"],
+    "confidence": "high",
+    "weight": 0.12
+  }
+] %}
+
+{% set dims = dimension_details_data if dimension_details_data else default_dimensions %}
+
+{% for dim in dims %}
+<div class="dim-detail-page page-break">
+
+  <div class="page-section-header">
+    <div class="page-section-eyebrow">Dimension {{ loop.index }} of 6</div>
+    <div class="page-section-title">{{ dim.dimension_name }}</div>
+  </div>
+
+  <!-- Dimension header band with score -->
+  <div class="dim-header-band">
+    <div style="flex:1;">
+      <div style="font-size:8pt; color:#8891A8; margin-bottom:0.04in;">DIMENSION SCORE</div>
+      <div class="dim-score-badge" style="color: {{ dim.tier_color if dim.tier_color else '#FFAE41' }};">
+        {{ dim.score }}
+      </div>
+      <div class="dim-tier-label" style="background: {{ dim.tier_color if dim.tier_color else '#FFAE41' }};">
+        {{ dim.tier_label }}
+      </div>
+    </div>
+    <div style="flex: 3;">
+      <div style="font-size: 7pt; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #8891A8; margin-bottom: 0.06in;">Score Reasoning</div>
+      <div class="dim-score-reasoning">{{ dim.narrative }}</div>
+    </div>
+  </div>
+
+  <!-- Strengths & Gaps -->
+  <div class="dim-two-col">
+    <div class="dim-box">
+      <div class="dim-box-title">Key Strengths</div>
+      <ul class="signal-list">
+        {% for strength in (dim.key_strengths if dim.key_strengths else ["No strengths data available"]) %}
+        <li><span class="signal-dot" style="background: #004AAC;"></span>{{ strength }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="dim-box">
+      <div class="dim-box-title">Key Gaps</div>
+      <ul class="signal-list">
+        {% for gap in (dim.key_gaps if dim.key_gaps else ["No gap data available"]) %}
+        <li><span class="signal-dot" style="background: #FFAE41;"></span>{{ gap }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <!-- Questionnaire Signals & Research Signals -->
+  <div class="dim-two-col">
+    <div class="dim-box">
+      <div class="dim-box-title">Questionnaire Signals</div>
+      <ul class="signal-list">
+        {% for sig in (dim.questionnaire_signals if dim.questionnaire_signals else ["No questionnaire data"]) %}
+        <li><span class="signal-dot" style="background: #004AAC;"></span>{{ sig }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="dim-box">
+      <div class="dim-box-title">Research Signals</div>
+      <ul class="signal-list">
+        {% for sig in (dim.research_signals if dim.research_signals else ["No research data"]) %}
+        <li><span class="signal-dot" style="background: #3D3F50;"></span>{{ sig }}</li>
+        {% endfor %}
+      </ul>
+
+      <div class="peer-placeholder">
+        Peer comparison data: available in V0.5 with benchmark pool &gt;25 organisations in this industry and size band.
+      </div>
+    </div>
+  </div>
+
+  <!-- What Strong Looks Like -->
+  <div class="dim-full-box">
+    <div class="dim-box-title">What Leading Looks Like in This Dimension</div>
+    <div class="dim-box-body">
+      {{ dim.what_strong_looks_like if dim.what_strong_looks_like else "Leading organisations in this dimension have systematic, automated capabilities with measurable outcomes and continuous improvement loops." }}
+    </div>
+  </div>
+
+  <!-- Actions to Improve -->
+  <div class="dim-box" style="background: #F6F3F0;">
+    <div class="dim-box-title">Actions to Improve</div>
+    <ol class="action-list">
+      {% for action in (dim.actions_to_improve if dim.actions_to_improve else ["No actions data available"]) %}
+      <li>
+        <span class="action-num">{{ loop.index }}.</span>
+        {{ action }}
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+
+</div>
+{% endfor %}
+
+<!-- ================================================================
+     FINAL PAGE: SOURCES & DISCLAIMER
+================================================================ -->
+<div class="section-page">
+
+  <div class="page-section-header">
+    <div class="page-section-eyebrow">Evidence Base</div>
+    <div class="page-section-title">Sources &amp; Disclaimer</div>
+  </div>
+
+  <div class="dim-box-title" style="margin-bottom: 0.12in;">Sources Consulted</div>
+  <ul class="sources-list">
+    {% if sources_consulted %}
+      {% for source in sources_consulted %}
+      <li>
+        <span class="source-bullet">›</span>
+        {{ source }}
+      </li>
+      {% endfor %}
+    {% else %}
+    <li><span class="source-bullet">›</span>Prospect questionnaire responses ({{ assessment_date if assessment_date else "Q2 2026" }})</li>
+    <li><span class="source-bullet">›</span>Company website and public technology partnership announcements</li>
+    <li><span class="source-bullet">›</span>LinkedIn talent signals and job posting analysis</li>
+    <li><span class="source-bullet">›</span>News and press release monitoring (prior 24 months)</li>
+    <li><span class="source-bullet">›</span>Earnings call transcripts and investor relations materials (where publicly available)</li>
+    <li><span class="source-bullet">›</span>Technology stack inference from public API footprints and vendor partner directories</li>
+    <li><span class="source-bullet">›</span>DXC AdvisoryX practitioner knowledge base and industry benchmarks (internal, proprietary)</li>
+    <li><span class="source-bullet">›</span>EU AI Act (Regulation (EU) 2024/1689) — official text and guidance</li>
+    <li><span class="source-bullet">›</span>DORA — Digital Operational Resilience Act (EU) 2022/2554</li>
+    <li><span class="source-bullet">›</span>NIST AI Risk Management Framework 1.0</li>
+    <li><span class="source-bullet">›</span>Federal Reserve SR 11-7: Guidance on Model Risk Management</li>
+    {% endif %}
+  </ul>
+
+  <div class="disclaimer-block">
+    <div class="disclaimer-title">Disclaimer</div>
+    <div class="disclaimer-body">
+      This report has been prepared by DXC Technology AdvisoryX exclusively for {{ company_name }} as of the assessment date indicated on the cover page. It is based on information provided by {{ company_name }} through the diagnostic questionnaire and on publicly available information gathered through automated research tools. DXC Technology makes no representation or warranty, express or implied, as to the accuracy, completeness, or fitness for purpose of the information contained herein. This report does not constitute legal, regulatory, financial, or professional advice and should not be relied upon as such. DXC Technology accepts no liability for any loss or damage arising from reliance on this report. This document is confidential and may not be reproduced, distributed, or disclosed to any third party without the prior written consent of DXC Technology.
+    </div>
+  </div>
+
+  <div class="contact-block">
+    <div class="contact-title">DXC AdvisoryX — Your Next Step</div>
+    <div class="contact-body">
+      To discuss these findings and explore how DXC can accelerate your AI readiness journey, please contact your DXC AdvisoryX account partner or reach us at <strong>advisoryx@dxc.com</strong>. Learn more at <strong>dxc.com/advisoryx</strong>.
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
