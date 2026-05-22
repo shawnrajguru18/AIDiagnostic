@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Readiness Diagnostic — {{ company_name }}</title>
+  <style>
+    /* ----------------------------------------------------------------
+       Page setup — US Letter, portrait
+    ---------------------------------------------------------------- */
+    @page {
+      size: letter portrait;
+      margin: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ----------------------------------------------------------------
+       Base typography
+       GT Standard not guaranteed — fall back to Arial/Helvetica
+    ---------------------------------------------------------------- */
+    body {
+      font-family: "GT Standard", Arial, Helvetica, sans-serif;
+      font-size: 10pt;
+      color: #3D3F50;
+      background: #F6F3F0;
+      width: 8.5in;
+      height: 11in;
+      overflow: hidden;
+    }
+
+    /* ----------------------------------------------------------------
+       Layout grid — full page, portrait US Letter
+    ---------------------------------------------------------------- */
+    .page {
+      width: 8.5in;
+      height: 11in;
+      background: #F6F3F0;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+    }
+
+    /* ================================================================
+       SECTION 1 — Header (top ~12%)
+    ================================================================ */
+    .header {
+      background: #0E1020;
+      width: 100%;
+      height: 1.32in;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 0.45in;
+      flex-shrink: 0;
+    }
+
+    .header-left {}
+
+    .header-title {
+      font-size: 7.5pt;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #A1E6FF;
+      margin-bottom: 0.06in;
+    }
+
+    .header-company {
+      font-size: 18pt;
+      font-weight: 700;
+      color: #FFFFFF;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+    }
+
+    .header-meta {
+      font-size: 8pt;
+      color: #8891A8;
+      margin-top: 0.05in;
+      letter-spacing: 0.02em;
+    }
+
+    .header-right {
+      text-align: right;
+    }
+
+    .wordmark-dxc {
+      font-size: 18pt;
+      font-weight: 900;
+      color: #FFFFFF;
+      letter-spacing: -0.02em;
+    }
+
+    .wordmark-sub {
+      font-size: 8pt;
+      font-weight: 400;
+      color: #8891A8;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-top: 0.03in;
+    }
+
+    /* ================================================================
+       CONTENT AREA — everything below the header
+    ================================================================ */
+    .content-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 0.28in 0.45in 0.18in 0.45in;
+      gap: 0.18in;
+    }
+
+    /* ================================================================
+       SECTION 2 — Overall Readiness Banner (top-right ~15%)
+    ================================================================ */
+    .readiness-row {
+      display: flex;
+      align-items: stretch;
+      gap: 0.22in;
+      flex-shrink: 0;
+    }
+
+    .readiness-card {
+      background: #FFFFFF;
+      border-radius: 6px;
+      padding: 0.18in 0.26in;
+      display: flex;
+      align-items: center;
+      gap: 0.22in;
+      flex: 0 0 auto;
+      min-width: 2.6in;
+      border-left: 5px solid {{ tier_color }};
+      box-shadow: 0 1px 4px rgba(14,16,32,0.07);
+    }
+
+    .readiness-score-block {
+      text-align: center;
+    }
+
+    .readiness-score {
+      font-size: 36pt;
+      font-weight: 900;
+      color: {{ tier_color }};
+      line-height: 1;
+    }
+
+    .readiness-outof {
+      font-size: 9pt;
+      color: #8891A8;
+    }
+
+    .readiness-info {
+    }
+
+    .tier-badge {
+      display: inline-block;
+      background: {{ tier_color }};
+      color: #0E1020;
+      font-size: 8.5pt;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.03in 0.1in;
+      border-radius: 3px;
+      margin-bottom: 0.05in;
+    }
+
+    .readiness-label {
+      font-size: 9pt;
+      color: #3D3F50;
+      font-weight: 600;
+    }
+
+    .peer-note {
+      font-size: 7.5pt;
+      color: #8891A8;
+      margin-top: 0.04in;
+      font-style: italic;
+    }
+
+    /* Executive summary text beside the card */
+    .executive-summary {
+      flex: 1;
+      background: #FFFFFF;
+      border-radius: 6px;
+      padding: 0.16in 0.22in;
+      font-size: 9pt;
+      line-height: 1.55;
+      color: #3D3F50;
+      box-shadow: 0 1px 4px rgba(14,16,32,0.07);
+    }
+
+    .executive-summary-label {
+      font-size: 7pt;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #004AAC;
+      margin-bottom: 0.06in;
+    }
+
+    /* ================================================================
+       SECTION 3 — Radar Chart + Dimension Scores (~35%)
+    ================================================================ */
+    .viz-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.24in;
+      flex-shrink: 0;
+    }
+
+    .radar-wrap {
+      flex: 0 0 2.9in;
+      text-align: center;
+    }
+
+    .radar-wrap img {
+      width: 2.9in;
+      height: 2.9in;
+      object-fit: contain;
+    }
+
+    .dimension-list {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.07in;
+    }
+
+    .dimension-list-label {
+      font-size: 7pt;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #004AAC;
+      margin-bottom: 0.05in;
+    }
+
+    .dim-row {
+      display: flex;
+      align-items: center;
+      gap: 0.1in;
+      padding: 0.06in 0.1in;
+      background: #FFFFFF;
+      border-radius: 4px;
+      box-shadow: 0 1px 2px rgba(14,16,32,0.05);
+    }
+
+    .dim-name {
+      flex: 1;
+      font-size: 8.5pt;
+      font-weight: 600;
+      color: #0E1020;
+    }
+
+    .dim-score {
+      font-size: 11pt;
+      font-weight: 800;
+      color: #0E1020;
+      width: 0.36in;
+      text-align: right;
+    }
+
+    .dim-bar-wrap {
+      width: 1.1in;
+      height: 0.1in;
+      background: #E8E4E0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .dim-bar {
+      height: 100%;
+      border-radius: 4px;
+    }
+
+    .dim-tier-badge {
+      font-size: 6.5pt;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.02in 0.07in;
+      border-radius: 2px;
+      white-space: nowrap;
+      color: #0E1020;
+    }
+
+    /* ================================================================
+       SECTION 4 — What We Found (~20%)
+    ================================================================ */
+    .findings-section {
+      flex-shrink: 0;
+    }
+
+    .section-label {
+      font-size: 7pt;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #004AAC;
+      margin-bottom: 0.1in;
+    }
+
+    .findings-grid {
+      display: flex;
+      gap: 0.14in;
+    }
+
+    .finding-card {
+      flex: 1;
+      background: #FFFFFF;
+      border-radius: 5px;
+      padding: 0.1in 0.13in;
+      box-shadow: 0 1px 3px rgba(14,16,32,0.06);
+      border-top: 3px solid #004AAC;
+    }
+
+    .finding-number {
+      font-size: 7pt;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      color: #004AAC;
+      text-transform: uppercase;
+      margin-bottom: 0.04in;
+    }
+
+    .finding-headline {
+      font-size: 8.5pt;
+      font-weight: 600;
+      color: #0E1020;
+      line-height: 1.35;
+    }
+
+    /* ================================================================
+       SECTION 5 + 6 — Next Step & Quick Wins row (~18%)
+    ================================================================ */
+    .cta-row {
+      display: flex;
+      gap: 0.18in;
+      align-items: stretch;
+      flex-shrink: 0;
+    }
+
+    .quick-wins-panel {
+      flex: 0 0 2.3in;
+      background: #FFFBF3;
+      border-radius: 5px;
+      padding: 0.12in 0.16in;
+      border-top: 3px solid #FFAE41;
+    }
+
+    .quick-wins-header {
+      font-size: 7pt;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #FFAE41;
+      margin-bottom: 0.08in;
+    }
+
+    .quick-wins-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .quick-wins-list li {
+      font-size: 8pt;
+      color: #3D3F50;
+      line-height: 1.45;
+      padding: 0.04in 0;
+      border-bottom: 1px solid #F0E8D8;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.06in;
+    }
+
+    .quick-wins-list li:last-child {
+      border-bottom: none;
+    }
+
+    .qw-dot {
+      display: inline-block;
+      width: 5px;
+      height: 5px;
+      background: #FFAE41;
+      border-radius: 50%;
+      margin-top: 0.06in;
+      flex-shrink: 0;
+    }
+
+    .next-step-panel {
+      flex: 1;
+      background: #FFFFFF;
+      border-radius: 5px;
+      border-left: 4px solid #004AAC;
+      padding: 0.14in 0.18in;
+      box-shadow: 0 1px 4px rgba(14,16,32,0.07);
+    }
+
+    .next-step-header {
+      font-size: 7pt;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #004AAC;
+      margin-bottom: 0.08in;
+    }
+
+    .next-step-title {
+      font-size: 10.5pt;
+      font-weight: 700;
+      color: #0E1020;
+      margin-bottom: 0.06in;
+      line-height: 1.25;
+    }
+
+    .next-step-desc {
+      font-size: 8.5pt;
+      color: #3D3F50;
+      line-height: 1.55;
+    }
+
+    /* ================================================================
+       SECTION 7 — Footer (~4%)
+    ================================================================ */
+    .footer {
+      background: #0E1020;
+      height: 0.34in;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 0.45in;
+      flex-shrink: 0;
+    }
+
+    .footer-confidential {
+      font-size: 7pt;
+      color: #8891A8;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .footer-ref {
+      font-size: 7pt;
+      color: #8891A8;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ================================================================
+       SECTION 1: Header
+  ================================================================ -->
+  <div class="header">
+    <div class="header-left">
+      <div class="header-title">AI Readiness Diagnostic</div>
+      <div class="header-company">{{ company_name }}</div>
+      <div class="header-meta">Assessment Date: {{ assessment_date }}</div>
+    </div>
+    <div class="header-right">
+      <div class="wordmark-dxc">DXC</div>
+      <div class="wordmark-sub">AdvisoryX</div>
+    </div>
+  </div>
+
+  <!-- Content area -->
+  <div class="content-area">
+
+    <!-- ================================================================
+         SECTION 2: Overall Readiness
+    ================================================================ -->
+    <div class="readiness-row">
+      <div class="readiness-card">
+        <div class="readiness-score-block">
+          <div class="readiness-score">{{ overall_score }}</div>
+          <div class="readiness-outof">out of 100</div>
+        </div>
+        <div class="readiness-info">
+          <div class="tier-badge">{{ overall_tier }}</div>
+          <div class="readiness-label">Overall AI Readiness</div>
+          <div class="peer-note">Peer benchmark: industry average shown on chart</div>
+        </div>
+      </div>
+
+      <div class="executive-summary">
+        <div class="executive-summary-label">Executive Summary</div>
+        {{ executive_narrative if executive_narrative else
+          company_name ~ " demonstrates a " ~ overall_tier ~ " level of AI readiness with an overall score of " ~ overall_score ~ ". Key strengths include structured governance and active investment, while data foundation maturity and organisational change readiness represent near-term priorities for acceleration." }}
+      </div>
+    </div>
+
+    <!-- ================================================================
+         SECTION 3: Radar Chart + Dimension Scores
+    ================================================================ -->
+    <div class="viz-row">
+      <div class="radar-wrap">
+        <img src="{{ radar_chart_b64 }}" alt="AI Readiness Radar Chart" />
+      </div>
+
+      <div class="dimension-list">
+        <div class="dimension-list-label">Dimension Breakdown</div>
+
+        {% set dim_display = dimension_scores if dimension_scores else [] %}
+        {% for dim in dim_display %}
+        <div class="dim-row">
+          <div class="dim-name">{{ dim.name }}</div>
+          <div class="dim-bar-wrap">
+            <div class="dim-bar" style="width: {{ dim.score }}%; background: {{ dim.tier_color }};"></div>
+          </div>
+          <div class="dim-score">{{ dim.score }}</div>
+          <div class="dim-tier-badge" style="background: {{ dim.tier_color }};">{{ dim.tier }}</div>
+        </div>
+        {% endfor %}
+
+        {% if not dimension_scores %}
+        <!-- Placeholder rows when no data is passed -->
+        {% set placeholders = [
+          ("Data Foundation", 52, "Developing", color_gold),
+          ("Governance Posture", 61, "Established", color_sky),
+          ("AI Investment Maturity", 48, "Developing", color_gold),
+          ("Org Change Readiness", 55, "Developing", color_gold),
+          ("Value-Pocket Clarity", 70, "Established", color_sky),
+          ("Regulatory Complexity", 44, "Developing", color_gold)
+        ] %}
+        {% for name, score, tier, tc in placeholders %}
+        <div class="dim-row">
+          <div class="dim-name">{{ name }}</div>
+          <div class="dim-bar-wrap">
+            <div class="dim-bar" style="width: {{ score }}%; background: {{ tc }};"></div>
+          </div>
+          <div class="dim-score">{{ score }}</div>
+          <div class="dim-tier-badge" style="background: {{ tc }};">{{ tier }}</div>
+        </div>
+        {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ================================================================
+         SECTION 4: What We Found
+    ================================================================ -->
+    <div class="findings-section">
+      <div class="section-label">What We Found</div>
+      <div class="findings-grid">
+        {% if findings %}
+          {% for finding in findings %}
+          <div class="finding-card">
+            <div class="finding-number">Finding {{ loop.index }}</div>
+            <div class="finding-headline">{{ finding.headline }}</div>
+          </div>
+          {% endfor %}
+        {% else %}
+        <!-- Placeholder findings -->
+        <div class="finding-card">
+          <div class="finding-number">Finding 1</div>
+          <div class="finding-headline">Data infrastructure is partially integrated but lacks enterprise-wide governance and cataloguing.</div>
+        </div>
+        <div class="finding-card">
+          <div class="finding-number">Finding 2</div>
+          <div class="finding-headline">AI investment is concentrated in pilot programmes; MLOps maturity is at an early stage.</div>
+        </div>
+        <div class="finding-card">
+          <div class="finding-number">Finding 3</div>
+          <div class="finding-headline">Executive sponsorship is visible but workforce AI literacy programmes are not yet formalised.</div>
+        </div>
+        <div class="finding-card">
+          <div class="finding-number">Finding 4</div>
+          <div class="finding-headline">Regulatory exposure across financial services frameworks creates near-term compliance obligations.</div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ================================================================
+         SECTION 5 + 6: Recommended Next Step & 90-Day Quick Wins
+    ================================================================ -->
+    <div class="cta-row">
+
+      <!-- Section 6: 90-Day Quick Wins (bottom-left) -->
+      <div class="quick-wins-panel">
+        <div class="quick-wins-header">90-Day Quick Wins</div>
+        <ul class="quick-wins-list">
+          {% if quick_wins_items %}
+            {% for item in quick_wins_items %}
+            <li><span class="qw-dot"></span>{{ item }}</li>
+            {% endfor %}
+          {% else %}
+          <li><span class="qw-dot"></span>Deploy AI-assisted contract review for procurement team</li>
+          <li><span class="qw-dot"></span>Launch enterprise data catalogue proof-of-concept</li>
+          <li><span class="qw-dot"></span>Establish AI Governance Working Group with CISO and Legal</li>
+          {% endif %}
+        </ul>
+      </div>
+
+      <!-- Section 5: Recommended Next Step (bottom-right) -->
+      <div class="next-step-panel">
+        <div class="next-step-header">Recommended Next Step</div>
+        {% if recommended_next_step %}
+        <div class="next-step-title">{{ recommended_next_step.title }}</div>
+        <div class="next-step-desc">{{ recommended_next_step.description }}</div>
+        {% else %}
+        <div class="next-step-title">AI Potential Review (APR) Discovery Session</div>
+        <div class="next-step-desc">
+          A structured two-day engagement with your leadership team to map priority value pockets, validate the diagnostic findings against internal data, and produce a sequenced 90-day activation roadmap. DXC AdvisoryX practice leads will facilitate.
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+  </div><!-- end .content-area -->
+
+  <!-- ================================================================
+       SECTION 7: Footer
+  ================================================================ -->
+  <div class="footer">
+    <div class="footer-confidential">Confidential — Prepared for {{ company_name }} by DXC Technology AdvisoryX</div>
+    <div class="footer-ref">AI Readiness Diagnostic V0 &nbsp;|&nbsp; Page 1 of 1</div>
+  </div>
+
+</div><!-- end .page -->
+</body>
+</html>

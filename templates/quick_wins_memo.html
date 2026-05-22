@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>90-Day Quick Wins — {{ company_name }}</title>
+  <style>
+    /* ----------------------------------------------------------------
+       Page setup — US Letter, portrait
+    ---------------------------------------------------------------- */
+    @page {
+      size: letter portrait;
+      margin: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "GT Standard", Arial, Helvetica, sans-serif;
+      font-size: 10pt;
+      color: #3D3F50;
+      background: #F6F3F0;
+      width: 8.5in;
+      height: 11in;
+      overflow: hidden;
+    }
+
+    .page {
+      width: 8.5in;
+      height: 11in;
+      background: #F6F3F0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ================================================================
+       Header
+    ================================================================ */
+    .header {
+      background: #0E1020;
+      width: 100%;
+      height: 1.0in;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 0.45in;
+      flex-shrink: 0;
+    }
+
+    .header-left {}
+
+    .header-eyebrow {
+      font-size: 7pt;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #FFAE41;
+      margin-bottom: 0.05in;
+    }
+
+    .header-title {
+      font-size: 16pt;
+      font-weight: 800;
+      color: #FFFFFF;
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+    }
+
+    .header-right {
+      text-align: right;
+    }
+
+    .wordmark-dxc {
+      font-size: 17pt;
+      font-weight: 900;
+      color: #FFFFFF;
+      letter-spacing: -0.02em;
+    }
+
+    .wordmark-sub {
+      font-size: 7.5pt;
+      font-weight: 400;
+      color: #8891A8;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-top: 0.03in;
+    }
+
+    /* ================================================================
+       Content
+    ================================================================ */
+    .content-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 0.26in 0.45in 0.18in 0.45in;
+      gap: 0.18in;
+    }
+
+    /* Intro paragraph */
+    .intro-block {
+      background: #FFFFFF;
+      border-radius: 5px;
+      padding: 0.14in 0.2in;
+      box-shadow: 0 1px 3px rgba(14,16,32,0.06);
+      font-size: 9pt;
+      line-height: 1.6;
+      color: #3D3F50;
+      flex-shrink: 0;
+    }
+
+    /* ================================================================
+       Pattern cards row
+    ================================================================ */
+    .cards-row {
+      display: flex;
+      gap: 0.18in;
+      flex: 1;
+      align-items: stretch;
+    }
+
+    .pattern-card {
+      flex: 1;
+      background: #FFFFFF;
+      border-radius: 6px;
+      box-shadow: 0 1px 4px rgba(14,16,32,0.07);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Royal accent square top-left */
+    .card-accent-bar {
+      height: 5px;
+      background: #004AAC;
+      width: 100%;
+      flex-shrink: 0;
+    }
+
+    .card-body {
+      padding: 0.14in 0.16in;
+      display: flex;
+      flex-direction: column;
+      gap: 0.1in;
+      flex: 1;
+    }
+
+    .card-pattern-name {
+      font-size: 10.5pt;
+      font-weight: 800;
+      color: #0E1020;
+      line-height: 1.2;
+    }
+
+    .card-description {
+      font-size: 8.5pt;
+      font-style: italic;
+      color: #3D3F50;
+      line-height: 1.45;
+    }
+
+    .card-section-label {
+      font-size: 6.5pt;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #004AAC;
+      margin-bottom: 0.04in;
+    }
+
+    .card-section-body {
+      font-size: 8pt;
+      color: #3D3F50;
+      line-height: 1.5;
+    }
+
+    .card-section {
+      flex-shrink: 0;
+    }
+
+    /* prerequisite bullets */
+    .prereq-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .prereq-list li {
+      font-size: 8pt;
+      color: #3D3F50;
+      line-height: 1.4;
+      padding: 0.025in 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.06in;
+    }
+
+    .prereq-check {
+      color: #004AAC;
+      font-weight: 700;
+      font-size: 9pt;
+      line-height: 1;
+      margin-top: 0.01in;
+      flex-shrink: 0;
+    }
+
+    /* Outcome / timeline row */
+    .card-meta-row {
+      display: flex;
+      gap: 0.1in;
+      margin-top: auto;
+    }
+
+    .card-meta-chip {
+      flex: 1;
+      background: #F6F3F0;
+      border-radius: 4px;
+      padding: 0.06in 0.08in;
+      text-align: center;
+    }
+
+    .card-meta-chip-label {
+      font-size: 6pt;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #8891A8;
+      margin-bottom: 0.02in;
+    }
+
+    .card-meta-chip-value {
+      font-size: 8pt;
+      font-weight: 700;
+      color: #0E1020;
+    }
+
+    /* ================================================================
+       Footer
+    ================================================================ */
+    .footer {
+      background: #0E1020;
+      height: 0.38in;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 0.45in;
+      flex-shrink: 0;
+    }
+
+    .footer-contact {
+      font-size: 7.5pt;
+      color: #8891A8;
+    }
+
+    .footer-ref {
+      font-size: 7pt;
+      color: #8891A8;
+      letter-spacing: 0.06em;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <div class="header-eyebrow">90-Day Quick Wins</div>
+      <div class="header-title">{{ company_name }}</div>
+    </div>
+    <div class="header-right">
+      <div class="wordmark-dxc">DXC</div>
+      <div class="wordmark-sub">AdvisoryX</div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content-area">
+
+    <!-- Intro paragraph -->
+    <div class="intro-block">
+      {% if intro_paragraph %}
+        {{ intro_paragraph }}
+      {% else %}
+        Based on {{ company_name }}'s diagnostic results, three AI patterns have been identified that can deliver measurable business value within 90 days — requiring no new data infrastructure and no significant technology investment. Each pattern is matched to capabilities already evidenced in your organisation's current technology estate and governance posture. Prerequisites are confirmed; the patterns are sequenced to build momentum and demonstrate executive-visible outcomes before quarter end. DXC AdvisoryX practitioners are available to activate any of these patterns within a standard engagement structure.
+      {% endif %}
+    </div>
+
+    <!-- Pattern Cards -->
+    <div class="cards-row">
+      {% set cards = pattern_cards if pattern_cards else [] %}
+
+      {% if cards %}
+        {% for card in cards %}
+        <div class="pattern-card">
+          <div class="card-accent-bar"></div>
+          <div class="card-body">
+            <div class="card-pattern-name">{{ card.pattern_name }}</div>
+            <div class="card-description">{{ card.description }}</div>
+
+            <div class="card-section">
+              <div class="card-section-label">What this would do for {{ company_name }}</div>
+              <div class="card-section-body">{{ card.what_it_does }}</div>
+            </div>
+
+            <div class="card-section">
+              <div class="card-section-label">Prerequisites you have</div>
+              <ul class="prereq-list">
+                {% for prereq in card.prerequisites %}
+                <li>
+                  <span class="prereq-check">✓</span>
+                  {{ prereq }}
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+
+            {% if card.expected_outcome %}
+            <div class="card-section">
+              <div class="card-section-label">Expected outcome range</div>
+              <div class="card-section-body">{{ card.expected_outcome }}</div>
+            </div>
+            {% endif %}
+
+            <div class="card-meta-row">
+              <div class="card-meta-chip">
+                <div class="card-meta-chip-label">Timeline to value</div>
+                <div class="card-meta-chip-value">{{ card.timeline if card.timeline else "8–12 weeks" }}</div>
+              </div>
+              {% if card.peer_data %}
+              <div class="card-meta-chip">
+                <div class="card-meta-chip-label">Peer benchmark</div>
+                <div class="card-meta-chip-value">{{ card.peer_data }}</div>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+
+      {% else %}
+      <!-- Placeholder cards -->
+      {% set placeholder_cards = [
+        {
+          "pattern_name": "AI-Assisted Contract Review",
+          "description": "Automate first-pass review and risk flagging for procurement and vendor contracts.",
+          "what_it_does": "Reduce legal review cycle time by 40–60% by deploying a pre-trained contract intelligence model against your existing document repository. No custom model training required; the model uses few-shot prompting against a standard contract taxonomy.",
+          "prerequisites": ["Existing document management system (SharePoint / Box confirmed)", "Legal team engaged with change programme", "At least 500 historical contracts available for calibration"],
+          "expected_outcome": "Peer organisations of comparable size report 35–55% reduction in review cycle time and 15–20% reduction in external counsel spend within 90 days.",
+          "timeline": "6–10 weeks",
+          "peer_data": "35–55% time saving"
+        },
+        {
+          "pattern_name": "Predictive Maintenance Signal Layer",
+          "description": "Layer an anomaly-detection model on top of existing IoT/sensor streams to surface early failure signals.",
+          "what_it_does": "Connect your existing sensor data streams to a pre-built anomaly detection pipeline. No new hardware required. Produces ranked alerts for maintenance teams with explainable reasoning per asset — enabling shift from reactive to condition-based scheduling.",
+          "prerequisites": ["IoT sensors already instrumented (confirmed via tech stack research)", "CMMS or equivalent maintenance system in place", "OT/IT integration pathway approved by security"],
+          "expected_outcome": "Organisations in similar sectors report 20–35% reduction in unplanned downtime events and 10–15% maintenance cost savings in the first operating quarter.",
+          "timeline": "8–12 weeks",
+          "peer_data": "20–35% downtime cut"
+        },
+        {
+          "pattern_name": "Intelligent Customer Triage",
+          "description": "Route inbound service requests to the correct team or resolution path using intent classification.",
+          "what_it_does": "Deploy a fine-tuned intent classification model on your customer service queue to automatically route, prioritise, and pre-draft responses for tier-1 cases. Integrates with your existing CRM or service desk platform via API — no infrastructure changes required.",
+          "prerequisites": ["CRM or service desk with API access (confirmed)", "Historical ticket data available for calibration (minimum 5,000 records)", "Customer service team lead engaged as change champion"],
+          "expected_outcome": "Peer benchmarks indicate 25–40% reduction in average handle time and 10–18 point NPS improvement within one quarter of deployment.",
+          "timeline": "8–10 weeks",
+          "peer_data": "25–40% AHT reduction"
+        }
+      ] %}
+
+      {% for card in placeholder_cards %}
+      <div class="pattern-card">
+        <div class="card-accent-bar"></div>
+        <div class="card-body">
+          <div class="card-pattern-name">{{ card.pattern_name }}</div>
+          <div class="card-description">{{ card.description }}</div>
+
+          <div class="card-section">
+            <div class="card-section-label">What this would do for {{ company_name }}</div>
+            <div class="card-section-body">{{ card.what_it_does }}</div>
+          </div>
+
+          <div class="card-section">
+            <div class="card-section-label">Prerequisites you have</div>
+            <ul class="prereq-list">
+              {% for prereq in card.prerequisites %}
+              <li>
+                <span class="prereq-check">✓</span>
+                {{ prereq }}
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+
+          <div class="card-section">
+            <div class="card-section-label">Expected outcome range</div>
+            <div class="card-section-body">{{ card.expected_outcome }}</div>
+          </div>
+
+          <div class="card-meta-row">
+            <div class="card-meta-chip">
+              <div class="card-meta-chip-label">Timeline to value</div>
+              <div class="card-meta-chip-value">{{ card.timeline }}</div>
+            </div>
+            <div class="card-meta-chip">
+              <div class="card-meta-chip-label">Peer benchmark</div>
+              <div class="card-meta-chip-value">{{ card.peer_data }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      {% endif %}
+
+    </div><!-- end .cards-row -->
+
+  </div><!-- end .content-area -->
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-contact">
+      {% if footer_contact %}
+        {{ footer_contact }}
+      {% else %}
+        DXC Technology AdvisoryX &nbsp;·&nbsp; advisoryx@dxc.com &nbsp;·&nbsp; dxc.com/advisoryx
+      {% endif %}
+    </div>
+    <div class="footer-ref">Confidential &nbsp;|&nbsp; AI Readiness Diagnostic V0</div>
+  </div>
+
+</div>
+</body>
+</html>
