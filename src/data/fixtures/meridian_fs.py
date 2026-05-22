@@ -197,15 +197,16 @@ MERIDIAN_FS_RESPONSES: List[Dict[str, Any]] = [
         "dimension_id": "regulatory_complexity",
         "answer_type": "multi_select",
         "selected_options": ["C", "D", "F"],  # FCA/PRA, SR 11-7, SOC 2
-        "score": None,
+        # Complexity score derived from number of applicable frameworks (3 = high = 75)
+        "score": 75,
         "skipped": False,
     },
     {
         "question_id": "Q6.2",
         "dimension_id": "regulatory_complexity",
         "answer_type": "single_select",
-        "selected_option": "C",   # Significant data localisation constraints
-        "score": None,
+        "selected_option": "C",   # Required in-region data residency; cloud restrictions apply
+        "score": 65,
         "skipped": False,
     },
     {
@@ -219,7 +220,8 @@ MERIDIAN_FS_RESPONSES: List[Dict[str, Any]] = [
             "We are assessing whether UK SCCs are sufficient or whether a "
             "UK-sovereign cloud deployment is required."
         ),
-        "score": None,
+        # Open-ended: moderate-high complexity score (70) reflecting substantive constraints
+        "score": 70,
         "skipped": False,
     },
 ]
@@ -546,6 +548,20 @@ MERIDIAN_FS_FIXTURE: Dict[str, Any] = {
     "prospect": MERIDIAN_FS_PROSPECT,
     "responses": MERIDIAN_FS_RESPONSES,
     "expected_synthesis": MERIDIAN_FS_EXPECTED_SYNTHESIS,
+    # Canonical "expected" key matching NorthernCare/AurelianTech fixture structure
+    "expected": {
+        "overall_score_range": [50, 60],
+        "overall_tier": "Developing",
+        "dimension_expected": {
+            "data_foundation": [44, 60],
+            "governance_posture": [30, 46],
+            "ai_investment_maturity": [54, 70],
+            "org_change_readiness": [47, 63],
+            "value_pocket_clarity": [40, 56],
+            "regulatory_complexity": [64, 80],
+        },
+        "recommended_quick_wins": ["QW-001", "QW-005", "QW-012"],
+    },
     # Tolerances for integration test assertions (±8 points on each dimension)
     "score_tolerances": {
         "overall": 5,
