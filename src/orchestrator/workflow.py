@@ -872,11 +872,12 @@ class DiagnosticWorkflow:
         responses = fx["responses"]
 
         # Build submission dict in the format run_intake() expects
+        # Fixture uses primary_contact_* keys; normalize here.
         submission = {
-            "prospect_name": prospect.get("prospect_name", ""),
-            "prospect_role": prospect.get("prospect_role", ""),
-            "prospect_email": prospect.get("prospect_email", ""),
-            "company_name_raw": prospect.get("company_name", prospect.get("company_canonical_name", "")),
+            "prospect_name": prospect.get("prospect_name") or prospect.get("primary_contact_name", "Demo User"),
+            "prospect_role": prospect.get("prospect_role") or prospect.get("primary_contact_title", "Executive"),
+            "prospect_email": prospect.get("prospect_email") or prospect.get("primary_contact_email", "demo@example.com"),
+            "company_name_raw": prospect.get("company_name") or prospect.get("company_canonical_name", ""),
             "company_website": prospect.get("company_website", ""),
             "primary_persona": prospect.get("persona", "P1"),
         }

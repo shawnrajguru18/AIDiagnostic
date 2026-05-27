@@ -16,7 +16,7 @@ from pydantic import BaseModel, EmailStr, field_validator
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import get_db, ProspectORM, QuestionnaireResponseORM, SynthesisOutputORM
-from src.data.questionnaire import get_question_pool, get_questions_by_persona
+from src.data.questionnaire import get_question_pool, get_questions_for_persona as get_questions_by_persona
 
 router = APIRouter(prefix="/api/submission", tags=["submission"])
 
