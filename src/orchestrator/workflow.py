@@ -825,12 +825,12 @@ class DiagnosticWorkflow:
             "agent_costs": agent_costs,
             "cost_summary": self._summarise_costs(agent_costs),
             "validation_passed": output_result.get("validation_passed"),
-            "scorecard_content": output_result.get("d1", {}).get("scorecard_content"),
-            "quick_wins_memo_content": output_result.get("d1", {}).get("quick_wins_memo_content"),
-            "findings_appendix_content": output_result.get("d1", {}).get("findings_appendix_content"),
+            "scorecard_content": (output_result.get("d1") or {}).get("scorecard_content"),
+            "quick_wins_memo_content": (output_result.get("d1") or {}).get("quick_wins_memo_content"),
+            "findings_appendix_content": (output_result.get("d1") or {}).get("findings_appendix_content"),
             "validation_output": output_result.get("d2"),
-            "overall_score": synthesis_result.get("c2", {}).get("overall_score"),
-            "tier": synthesis_result.get("c2", {}).get("tier"),
+            "overall_score": (synthesis_result.get("c2") or {}).get("overall_score"),
+            "tier": (synthesis_result.get("c2") or {}).get("tier"),
         }
 
     # ------------------------------------------------------------------

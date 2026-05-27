@@ -112,11 +112,11 @@ class C1IndustryAgent(BaseAgent):
         """
         start = time.time()
 
-        industry_label = inputs.get("company_industry_label", "").strip()
-        naics_code = inputs.get("company_industry_naics", "").strip()
-        size_band = inputs.get("company_size_band_estimate", "unknown").strip()
-        company_name = inputs.get("company_canonical_name", "the prospect").strip()
-        business_model_signals = inputs.get("business_model_signals", [])
+        industry_label = (inputs.get("company_industry_label") or "").strip()
+        naics_code = (inputs.get("company_industry_naics") or "").strip()
+        size_band = (inputs.get("company_size_band_estimate") or "unknown").strip()
+        company_name = (inputs.get("company_canonical_name") or "the prospect").strip()
+        business_model_signals = inputs.get("business_model_signals") or []
 
         if not industry_label:
             return AgentError(

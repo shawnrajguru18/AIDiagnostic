@@ -49,7 +49,11 @@ class BaseAgent:
     latency_budget_seconds: int = 60
 
     def __init__(self):
-        self.client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
+        key = settings.anthropic_api_key
+        if key and key.startswith("sk-ant-si-"):
+            self.client = anthropic.Anthropic(auth_token=key)
+        else:
+            self.client = anthropic.Anthropic(api_key=key)
 
     # ------------------------------------------------------------------
     # LLM helpers
@@ -108,6 +112,18 @@ class BaseAgent:
                 return json.loads(obj_match.group())
             except json.JSONDecodeError:
                 pass
+
+        # Last resort: find first { and try incremental truncation to find valid JSON
+        brace_start = text.find("{")
+        if brace_start != -1:
+            candidate = text[brace_start:]
+            # Walk back from end to find outermost closing brace
+            for end in range(len(candidate), 0, -1):
+                if candidate[end - 1] == "}":
+                    try:
+                        return json.loads(candidate[:end])
+                    except json.JSONDecodeError:
+                        continue
 
         raise ValueError(
             f"Could not parse JSON from LLM response. Raw content (first 500 chars): "

@@ -396,7 +396,7 @@ class C2SynthesisAgent(BaseAgent):
             llm_result = self._call_llm(
                 system_prompt=_SYSTEM_PROMPT,
                 user_prompt=user_prompt,
-                max_tokens=6000,
+                max_tokens=8000,
             )
         except Exception as exc:
             return AgentError(
