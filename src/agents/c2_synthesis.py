@@ -392,11 +392,18 @@ class C2SynthesisAgent(BaseAgent):
         )
 
         # --- Step 3: Call Opus LLM ---
+        # Scale token budget by model tier
+        if self.model == settings.model_haiku:
+            max_tok = 3000
+        elif self.model == settings.model_sonnet:
+            max_tok = 5000
+        else:
+            max_tok = 8000
         try:
             llm_result = self._call_llm(
                 system_prompt=_SYSTEM_PROMPT,
                 user_prompt=user_prompt,
-                max_tokens=8000,
+                max_tokens=max_tok,
             )
         except Exception as exc:
             return AgentError(

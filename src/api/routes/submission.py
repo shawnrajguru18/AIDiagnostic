@@ -377,16 +377,21 @@ async def get_status(
 
 @router.get("/demo/{scenario}")
 async def run_demo_scenario(scenario: str) -> Dict[str, Any]:
-    """Run one of the three demo scenarios end-to-end.
+    """Run one of the three demo scenarios end-to-end (full pipeline, all models)."""
+    return await _run_demo(scenario, fast_mode=False)
 
-    Supported scenarios:
-    - ``meridian_fs``     : MeridianFS (Financial Services, Large, ~55 Developing)
-    - ``northern_care``   : NorthernCare Health (Healthcare, Mid-Market, ~41 Emerging)
-    - ``aurelian_tech``   : Aurelian Technologies (Technology, Enterprise, ~68 Established)
 
-    Returns the complete scorecard output including synthesised content,
-    radar chart data URI, and all three PDF artifact sizes.
+@router.get("/demo/fast/{scenario}")
+async def run_demo_scenario_fast(scenario: str) -> Dict[str, Any]:
+    """Run a demo scenario in fast mode: Sonnet/Haiku for all agents, D2 skipped.
+
+    Completes in ~30-45 seconds vs 3-5 minutes for the full pipeline.
+    Supported scenarios: meridian_fs | northern_care | aurelian_tech
     """
+    return await _run_demo(scenario, fast_mode=True)
+
+
+async def _run_demo(scenario: str, fast_mode: bool) -> Dict[str, Any]:
     valid_scenarios = {"meridian_fs", "northern_care", "aurelian_tech"}
     if scenario not in valid_scenarios:
         raise HTTPException(
@@ -399,20 +404,18 @@ async def run_demo_scenario(scenario: str) -> Dict[str, Any]:
 
     try:
         from src.orchestrator.workflow import DiagnosticWorkflow
-        workflow = DiagnosticWorkflow()
+        workflow = DiagnosticWorkflow(fast_mode=fast_mode)
         result = await workflow.run_demo_scenario(scenario)
         return result
     except ImportError:
-        # Orchestrator not yet implemented — return a stub fixture
         pass
 
-    # Stub fixtures per scenario
+    # Stub fallback
     fixtures: Dict[str, Dict[str, Any]] = {
         "meridian_fs": _stub_meridian_fs(),
         "northern_care": _stub_northern_care(),
         "aurelian_tech": _stub_aurelian_tech(),
     }
-
     return fixtures[scenario]
 
 

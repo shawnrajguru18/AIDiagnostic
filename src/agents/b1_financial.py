@@ -270,9 +270,10 @@ class B1FinancialAgent(BaseAgent):
         data_source = "llm_inference"
         sources: list = []
 
-        # ---- Attempt SEC EDGAR lookup (US companies only) ----
+        # ---- Attempt SEC EDGAR lookup (US companies only, skipped in llm_only mode) ----
+        llm_only = inputs.get("llm_only", False)
         is_us_company = hq_country.upper() in ("US", "USA", "UNITED STATES", "")
-        if is_us_company and self._elapsed_ms(start) / 1000 < _AGENT_TIMEOUT_SECONDS - 30:
+        if not llm_only and is_us_company and self._elapsed_ms(start) / 1000 < _AGENT_TIMEOUT_SECONDS - 30:
             try:
                 company_info = _search_edgar_company(company_name, ticker)
                 if company_info and company_info.get("cik"):

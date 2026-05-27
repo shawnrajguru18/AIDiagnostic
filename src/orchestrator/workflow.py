@@ -25,6 +25,8 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
+from src.config import settings
+
 # ---------------------------------------------------------------------------
 # Agent imports
 # ---------------------------------------------------------------------------
@@ -189,8 +191,9 @@ class DiagnosticWorkflow:
         result = await workflow.run_full_pipeline(submission, questionnaire_responses)
     """
 
-    def __init__(self) -> None:
+    def __init__(self, fast_mode: bool = False) -> None:
         # Instantiate agents (stateless — safe to share across runs)
+        self.fast_mode = fast_mode
         self.a1 = A1IntakeAgent()
         self.b1 = B1FinancialAgent()
         self.b2 = B2NewsAgent()
@@ -200,6 +203,12 @@ class DiagnosticWorkflow:
         self.c3 = C3QuickWinsAgent()
         self.d1 = D1OutputAgent()
         self.d2 = D2ValidationAgent()
+
+        if fast_mode:
+            # Research + quick agents → Haiku; C2 synthesis → Sonnet (complex JSON schema)
+            for agent in (self.b1, self.b2, self.b3, self.c1, self.c3, self.d1, self.d2):
+                agent.model = settings.model_haiku
+            self.c2.model = settings.model_sonnet
 
     # ------------------------------------------------------------------
     # Phase 1: Intake
@@ -324,6 +333,7 @@ class DiagnosticWorkflow:
             "company_hq_country": hq_country,
             "company_industry_label": industry_label,
             "prospect_id": prospect_id,
+            "llm_only": self.fast_mode,
         }
         b2_inputs = {
             "company_canonical_name": company_name,
@@ -621,33 +631,36 @@ class DiagnosticWorkflow:
 
         d1_data = d1_result.data
 
-        # --- D2: Validation ---
-        all_research = {
-            "b1": research.get("b1", {}),
-            "b2": research.get("b2", {}),
-            "b3": research.get("b3", {}),
-        }
-        # Pass questionnaire responses to D2 for fact-grounding checks
-        responses_list = (questionnaire_responses or {}).get("responses", [])
-
-        d2_inputs = {
-            "d1_output_json": d1_data,
-            "c2_output_json": synthesis.get("c2", {}),
-            "research_outputs_json": all_research,
-            "questionnaire_responses_json": responses_list,
-        }
-        d2_result = await asyncio.get_event_loop().run_in_executor(
-            None, self.d2.run, d2_inputs
-        )
-        agent_costs.append(_agent_cost_record("D2_validation", d2_result))
-
-        if not d2_result.success:
-            _audit("d2_failed", prospect_id=prospect_id, details={"error": d2_result.error}, severity="warning")
-            d2_data = {"overall_validation_passed": None, "blocking_issues": [], "validation_flags": []}
-            validation_passed = None
+        # --- D2: Validation (skipped in fast mode) ---
+        if self.fast_mode:
+            d2_data = {"overall_validation_passed": True, "blocking_issues": [], "validation_flags": [], "skipped": True}
+            validation_passed = True
         else:
-            d2_data = d2_result.data
-            validation_passed = d2_data.get("overall_validation_passed", True)
+            all_research = {
+                "b1": research.get("b1", {}),
+                "b2": research.get("b2", {}),
+                "b3": research.get("b3", {}),
+            }
+            responses_list = (questionnaire_responses or {}).get("responses", [])
+
+            d2_inputs = {
+                "d1_output_json": d1_data,
+                "c2_output_json": synthesis.get("c2", {}),
+                "research_outputs_json": all_research,
+                "questionnaire_responses_json": responses_list,
+            }
+            d2_result = await asyncio.get_event_loop().run_in_executor(
+                None, self.d2.run, d2_inputs
+            )
+            agent_costs.append(_agent_cost_record("D2_validation", d2_result))
+
+            if not d2_result.success:
+                _audit("d2_failed", prospect_id=prospect_id, details={"error": d2_result.error}, severity="warning")
+                d2_data = {"overall_validation_passed": None, "blocking_issues": [], "validation_flags": []}
+                validation_passed = None
+            else:
+                d2_data = d2_result.data
+                validation_passed = d2_data.get("overall_validation_passed", True)
 
         elapsed = _elapsed_s(phase_start)
         sla_warning = _check_sla("output", elapsed)
@@ -684,6 +697,7 @@ class DiagnosticWorkflow:
         self,
         submission: dict,
         questionnaire_responses: dict,
+        normalized_patch: Optional[dict] = None,
     ) -> dict:
         """Execute the complete diagnostic pipeline end to end.
 
@@ -733,6 +747,12 @@ class DiagnosticWorkflow:
         prospect_id = intake_result["prospect_id"]
         normalized = intake_result["normalized"]
         primary_persona = intake_result["primary_persona"]
+
+        # Apply fixture overrides for any null fields (demo mode only)
+        if normalized_patch:
+            for key, val in normalized_patch.items():
+                if not normalized.get(key):
+                    normalized[key] = val
 
         # ---- Phase 2: Research ----
         t0 = time.time()
@@ -871,13 +891,16 @@ class DiagnosticWorkflow:
         prospect = fx["prospect"]
         responses = fx["responses"]
 
+        company_name = prospect.get("company_name") or prospect.get("company_canonical_name", "Demo Company")
+        industry = prospect.get("industry", "Technology")
+        size_band = prospect.get("size_band", "mid-market")
+
         # Build submission dict in the format run_intake() expects
-        # Fixture uses primary_contact_* keys; normalize here.
         submission = {
             "prospect_name": prospect.get("prospect_name") or prospect.get("primary_contact_name", "Demo User"),
             "prospect_role": prospect.get("prospect_role") or prospect.get("primary_contact_title", "Executive"),
             "prospect_email": prospect.get("prospect_email") or prospect.get("primary_contact_email", "demo@example.com"),
-            "company_name_raw": prospect.get("company_name") or prospect.get("company_canonical_name", ""),
+            "company_name_raw": company_name,
             "company_website": prospect.get("company_website", ""),
             "primary_persona": prospect.get("persona", "P1"),
         }
@@ -886,10 +909,17 @@ class DiagnosticWorkflow:
 
         _audit(
             "demo_scenario_started",
-            details={"fixture_name": fixture_name, "company": submission["company_name_raw"]},
+            details={"fixture_name": fixture_name, "company": company_name},
         )
 
-        return await self.run_full_pipeline(submission, questionnaire_responses)
+        # For demo fixtures, pre-seed fields A1 may fail to resolve for fictional companies
+        normalized_patch = {
+            "company_canonical_name": company_name,
+            "company_industry_label": industry,
+            "company_size_band_estimate": size_band,
+        }
+
+        return await self.run_full_pipeline(submission, questionnaire_responses, normalized_patch=normalized_patch)
 
     # ------------------------------------------------------------------
     # Internal utilities
